@@ -1,0 +1,30 @@
+**Weather Report**
+
+### Introduction
+This report provides an overview of the current weather conditions in two major cities in India: Indore and Hyderabad.
+
+### City Weather Conditions
+
+#### Indore
+The current weather in Indore is characterized by:
+- Temperature: 22.81 degrees
+- Humidity: 93%
+- Description: Overcast clouds
+- Wind Speed: 4.97 units
+- Time Zone: 19800
+- Visibility: 10,000 units
+
+#### Hyderabad
+The current weather in Hyderabad is characterized by:
+- Temperature: 24.5 degrees
+- Humidity: 69%
+- Description: Overcast clouds
+- Wind Speed: 8.18 units
+- Time Zone: 19800
+- Visibility: 10,000 units
+
+### Comparison of Weather Conditions
+Both cities are experiencing overcast clouds, indicating similar weather patterns. However, there are notable differences in temperature and humidity levels between the two cities. Indore has a lower temperature and higher humidity compared to Hyderabad.
+
+### Conclusion
+This report highlights the current weather conditions in Indore and Hyderabad, providing insights into the temperature, humidity, and other key weather factors in these cities. The information presented can be useful for various purposes, including travel planning, outdoor activities, and weather forecasting.

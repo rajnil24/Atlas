@@ -1,0 +1,31 @@
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Optional
+from pydantic import BaseModel, Field
+
+
+
+class StepStatus(str, Enum):
+
+    PENDING = "pending"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILED = "failed"
+
+
+@dataclass
+class PlanStep:
+    
+    step_id : str
+    tool_name: str
+    # May contain references like {{step_1.output}}
+    tool_input: dict[str, Any] = Field(default_factory=dict)
+    status: StepStatus = StepStatus.PENDING
+    output: Optional[Any] = None
+    error: Optional[str] = None
+
+
+@dataclass
+class Plan(BaseModel):
+    steps: list[PlanStep] = field(default_factory=list)
+    plan_response : str = ""

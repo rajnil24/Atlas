@@ -1,0 +1,1 @@
+The current weather in Mumbai is: {'city': 'Mumbai', 'country': 'IN', 'temperature': 27.78, 'humidity': 81, 'description': 'overcast clouds', 'wind_speed': 7.82, 'time_zone': 19800, 'visibility': 7025}

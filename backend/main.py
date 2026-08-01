@@ -12,6 +12,8 @@ from backend.tools.web_search import WebSearchTool
 from backend.tools.filetool import FileTool
 from backend.tools.llm_tool import LLMTool
 from backend.tools.calendar import CalendarTool
+from backend.tools.gmail import GmailTool
+from backend.services.code_writer import CodeWriterTool
 
 app = FastAPI()
 llm = LLMClient()
@@ -25,6 +27,8 @@ registry.register(DateTimeTool())
 registry.register(FileTool())
 registry.register(LLMTool())
 registry.register(CalendarTool())
+registry.register(GmailTool())
+registry.register(CodeWriterTool())
 
 planner = Planner(llm , registry)
 agent = Agent(planner , registry)

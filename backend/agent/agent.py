@@ -63,6 +63,7 @@ class Agent:
 
                 step.status = StepStatus.SUCCESS
                 step.output = result.output
+                #print(step.output)
                 context.set_result(    
                     step.step_id,          
                     result.output,
@@ -89,6 +90,11 @@ class Agent:
         plan_response = plan.plan_response
         #print(plan_response)
         reply = nl_ans( plan_response)
-        #print("context results are ->" , context.results)
+        """
+        print("------------------------------------")
+        print(reply)
+        print("------------------------------------")
+        print("context results are ->" , context.results)
+        """
         return reply
         

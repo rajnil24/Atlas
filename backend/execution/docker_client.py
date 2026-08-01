@@ -15,11 +15,11 @@ class DockerClient :
         "--memory" , "512m" ,
         "--pids-limit", "64",
         "--network", "none",
+        "--read-only",
+        "--tmpfs", "/tmp",
 
         "-v",
         f"{workspace}:/app",
-        "-w",
-        "/app",
         "atlas-python:3.13",
         "python",
         "generated_code.py",

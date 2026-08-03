@@ -18,9 +18,9 @@ class PlanStep:
     
     step_id : str
     tool_name: str
-    # May contain references like {{step_1.output}}
     tool_input: dict[str, Any] = Field(default_factory=dict)
     status: StepStatus = StepStatus.PENDING
+    depends_on : list[str] = Field(default_factory=list)
     output: Optional[Any] = None
     error: Optional[str] = None
 

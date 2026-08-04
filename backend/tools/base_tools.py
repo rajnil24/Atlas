@@ -21,7 +21,7 @@ class BaseTool(ABC):
     input_schema: Type[BaseModel]
 
     @abstractmethod
-    def run(
+    async def run(
         self,
         input_data: dict
     ) -> ToolResult:

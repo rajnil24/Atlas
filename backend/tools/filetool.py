@@ -82,7 +82,7 @@ Rules:
             ".docx": self.read_docx_file
         }
         
-    def run(self , input_data : FileToolInput) -> ToolResult :
+    async def run(self , input_data : FileToolInput) -> ToolResult :
         print("inside run")
         print(input_data)
         print(type(input_data))

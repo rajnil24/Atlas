@@ -13,7 +13,7 @@ class CalculatorTool(BaseTool):
     tool_description =  " Input: {{expression: <mathematical expression>}} Performs arithmetic calculations."
     input_schema = CalculatorInput
 
-    def run(
+    async def run(
         self,
         input_data: CalculatorInput
     ) -> ToolResult:

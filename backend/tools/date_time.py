@@ -18,7 +18,7 @@ class DateTimeTool(BaseTool):
 
     input_schema = DateTimeInput
 
-    def run(
+    async def run(
         self,
         input_data: DateTimeInput
     ) -> ToolResult:

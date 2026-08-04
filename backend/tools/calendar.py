@@ -79,11 +79,8 @@ Rules
             "list": self.list_calendars
         }
     
-    
-    
-    
-    def run(self, input_data: CalendarInput) -> ToolResult:
-        print("inside run calendar.py")
+    async def run(self, input_data: CalendarInput) -> ToolResult:
+        #print("inside run calendar.py")
         operation = input_data.operation
         handler = self.operations.get(operation)
         

@@ -27,7 +27,7 @@ Capabilities:
     def __init__(self) :
         self.executor = DockerExecutor()
 
-    def run(self, input_data: PythonInput) -> ToolResult:
+    async def run(self, input_data: PythonInput) -> ToolResult:
 
         with tempfile.TemporaryDirectory(prefix="atlas_") as temp_dir:
 

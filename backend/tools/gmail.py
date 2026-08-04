@@ -57,7 +57,7 @@ Rules:
         #"mark_unread": self.mark_unread,
         }
     
-    def run(self, input_data: GmailToolInput) -> ToolResult:
+    async def run(self, input_data: GmailToolInput) -> ToolResult:
 
         handler = self.operations.get(input_data.operation)
         if handler is None:

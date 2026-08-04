@@ -11,23 +11,23 @@ class WebSearchTool(BaseTool) :
     tool_description = "Input Schema: <query: string> . Searches the internet for factual, current or unknown information."
     input_schema = WebSearchInput
 
-    def run(self , input_data : WebSearchInput) :
-        print(type(input_data))
-        print(input_data)
+    async def run(self , input_data : WebSearchInput) :
+        #print(type(input_data))
+        #print(input_data)
         client = TavilyClient(api_key = TAVILY_API_KEY)
         query = input_data.query
-        print(query)
+        #print(query)
         try :
             response = client.search(query = query , search_depth = "basic" , max_results = 1)
             results = []
-            print(response)
-            print(type(response))
+            #print(response)
+            #print(type(response))
             for item in response.get("results" , []) :
-                print("inside loop")
+                #print("inside loop")
                 results.append({"title":item.get("title" , "")})
                 results.append({"content":item.get("content" , "")})
                 results.append({"url":item.get("url" , "")})
-            print(results)
+            #print(results)
             return ToolResult(
                 success=True ,
                 output = {

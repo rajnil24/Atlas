@@ -15,7 +15,7 @@ class Planner:
         self.registry = registry
       
     
-    def create_plan(
+    async def create_plan(
     self,
     message: str,
     history: str,
@@ -26,7 +26,7 @@ class Planner:
     history=history,
     message=message
     )
-       response = self.llm.generate(prompt)
+       response = await self.llm.generate(prompt)
        
        response = response.replace("```json" , "")
        response = response.replace("```" , "")

@@ -38,7 +38,7 @@ class ChatRequest(BaseModel):
     message: str
 
 @app.post("/chat")
-def chat(request: ChatRequest):
+async def chat(request: ChatRequest):
     query = request.message 
     session_id = request.session_id
     history = memory.get_message(session_id)
@@ -47,7 +47,7 @@ def chat(request: ChatRequest):
         session_id ,
         role = "user"
     )
-    reply = agent.run(query , history)
+    reply = await agent.run(query , history)
     memory.add_message(
         content =  reply ,
         session_id = request.session_id ,

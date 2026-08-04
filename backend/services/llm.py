@@ -9,7 +9,7 @@ class LLMClient:
         self.client = Groq(api_key=GROQ_API_KEY)
         self.model = "llama-3.3-70b-versatile"
     
-    def generate(self, prompt: str) -> str:
+    async def generate(self, prompt: str) -> str:
         response = self.client.chat.completions.create(
         model=self.model,
         messages=[
@@ -21,7 +21,7 @@ class LLMClient:
     )
         return response.choices[0].message.content
     
-    def synthesize_response(self, prompt: str) -> str:
+    async def synthesize_response(self, prompt: str) -> str:
         response = self.client.chat.completions.create(
         model=self.model,
         messages=[
@@ -33,7 +33,7 @@ class LLMClient:
     )
         return response.choices[0].message.content
 
-    def generate_response(self, messages: list) -> str:
+    async def generate_response(self, messages: list) -> str:
 
         response = self.client.chat.completions.create(
             model=self.model,

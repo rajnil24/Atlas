@@ -11,6 +11,7 @@ class StepStatus(str, Enum):
     RUNNING = "running"
     SUCCESS = "success"
     FAILED = "failed"
+    SKIPPED = "skipped"
 
 
 @dataclass

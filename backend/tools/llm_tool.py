@@ -124,7 +124,7 @@ Example
 """
     input_schema = LLMToolInput
 
-    def run(self , input_data : LLMToolInput)->ToolResult :
+    async def run(self , input_data : LLMToolInput)->ToolResult :
         prompts = {
         "summarize" :"""
         Summarize the following text.

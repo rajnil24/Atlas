@@ -16,7 +16,7 @@ class WeatherTool(BaseTool):
     )
     input_schema = WeatherInput
 
-    def run(
+    async def run(
         self,
         input_data: WeatherInput
     ) -> ToolResult:

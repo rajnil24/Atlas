@@ -44,7 +44,7 @@ Use this tool whenever a task requires generating source code for computation, d
             code = "\n".join(lines)
         return code.strip()
 
-    def run(self , input_data : CodeWriterInput) ->ToolResult :
+    async def run(self , input_data : CodeWriterInput) ->ToolResult :
         code_builder_prompt =  CODE_WRITER_PROMPT.format(
             task = input_data.task ,
             language = input_data.language
@@ -52,7 +52,7 @@ Use this tool whenever a task requires generating source code for computation, d
         #print("inside code_wrt")
         #print(type(code_builder_prompt))
         #print(code_builder_prompt)
-        generated_code = self.llm.generate(code_builder_prompt)
+        generated_code = await self.llm.generate(code_builder_prompt)
         #print(generated_code)  
         code = self.clean_code(generated_code)
         #print(code)

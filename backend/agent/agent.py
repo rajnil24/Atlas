@@ -27,7 +27,7 @@ class Agent:
         print(plan)
         llm = LLMClient()
         if len(plan.steps) == 0:
-            reply = llm.generate(message)
+            reply = await llm.generate(message)
             return reply
         
         
@@ -89,15 +89,15 @@ class Agent:
         final_result = context.get_result(id)
         #print("final_result is ->" , final_result)
 
-        def nl_ans( plan_response) :
+        async def nl_ans( plan_response) :
             prompt = HUMAN_ANS_PROMPT.format(plan = plan_response ,message = message 
                                              ,final_result=final_result)
-            reply = llm.generate(prompt)
+            reply = await llm.generate(prompt)
             return reply
         
         plan_response = plan.plan_response
         #print(plan_response)
-        reply = nl_ans( plan_response)
+        reply = await nl_ans( plan_response)
         """
         print("------------------------------------")
         print(reply)

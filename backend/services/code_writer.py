@@ -17,17 +17,21 @@ class CodeWriterTool(BaseTool) :
     tool_description = """
 Input Schema: <task : string, language : string>.
 
-Generates executable source code for the requested task in the specified programming language.
+- If the user provides only a programming task, generate complete executable source code in the requested (or inferred) language.
 
-Use this tool BEFORE any language runtime tool whenever executable source code must be generated from a natural language task.
+- Use this tool BEFORE any language runtime tool whenever executable source code must be generated from a natural language task.
+
+- If the user already provides source code, do not rewrite or modify it unless explicitly requested. Instead, extract the code, detect its programming language if necessary, and return it unchanged.
+
+- Use this tool whenever a task requires generating source code for computation, data processing, scripting, file generation, automation, algorithms, or language-specific libraries a processing, file generation, scripting or code libraries.
+
+- Always return structured output containing:
+    * language
+    * code
 
 Supported languages include Python, C, C++, Java, TypeScript, JavaScript and many others.
 
 Returns ONLY raw source code without markdown, explanations, or additional text.
-
-Use this tool whenever a task requires generating source code for computation, data processing, scripting, file generation, automation, algorithms, or language-specific libraries a processing, file generation, scripting or code libraries.
-
-
 """
 
     def __init__(self) :

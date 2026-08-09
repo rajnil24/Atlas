@@ -10,8 +10,9 @@ class PythonTool(BaseTool) :
     input_schema = PythonInput
     tool_description = """
 Executes arbitrary Python code inside a secure Docker sandbox.
-Use this tool whenever solving a task requires computation,
+-Use this tool whenever solving a task requires computation,
 data processing, file generation, scripting or Python libraries.
+-
 
 Capabilities:
 

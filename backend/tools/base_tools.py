@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Type
 from pydantic import BaseModel
-
+from backend.models.feedback import Feedback
 
 class ToolResult(BaseModel):
     success: bool
@@ -26,3 +26,17 @@ class BaseTool(ABC):
         input_data: dict
     ) -> ToolResult:
         pass
+
+    async def validate(
+        self,
+        input_data: BaseModel,
+        result: ToolResult,
+    ) -> Feedback | None:
+        """
+        Optional deterministic task validator.
+        Returns:
+            Feedback if the tool knows how to objectively
+            validate its result.
+            None if no deterministic validator exists.
+        """
+        return None

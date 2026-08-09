@@ -2,10 +2,11 @@ import asyncio
 
 from backend.agent.execution_context import ExecutionContext
 from backend.scheduler.scheduler import Scheduler
-from backend.models.plan import Plan
-from backend.models.plan import PlanStep, StepStatus
+from backend.models.step_attempt import StepAttempt
+from backend.models.plan import PlanStep, StepStatus , Plan
 from backend.tools.registry import ToolRegistry
-
+from backend.tools.base_tools import ToolResult
+from backend.models.feedback import FeedbackVerdict , Feedback
 
 class ParallelExecutor:
 
@@ -18,6 +19,7 @@ class ParallelExecutor:
         self.registry = registry
         self.semaphore = asyncio.Semaphore(max_concurrency)
         self.step_timeout = step_timeout
+
 
     async def execute_plan(self, plan: Plan) -> ExecutionContext:
 
@@ -66,38 +68,124 @@ class ParallelExecutor:
 
             step.status = StepStatus.RUNNING
 
+            attempt_number = len(step.attempts) + 1
+
+            attempt_input = self._get_attempt_input(step)
+
+            resolved_input = context.resolve(attempt_input)
+
             try:
 
                 tool = self.registry.get(step.tool_name)
-
-                resolved_input = context.resolve(step.tool_input)
-
                 validated_input = tool.input_schema(**resolved_input)
 
                 result = await asyncio.wait_for(
                     tool.run(validated_input),
                     timeout=self.step_timeout,
                 )
-
-                if not result.success:
-                    raise RuntimeError(result.error)
-
-                step.output = result.output
-                step.status = StepStatus.SUCCESS
-
-                await context.set_result(
-                    step.step_id,
-                    result.output,
-                )
-
-                scheduler.mark_completed(step.step_id)
-
+  
             except Exception as e:
 
-                step.status = StepStatus.FAILED
-                step.error = str(e)
+                result = ToolResult(
+                success=False,
+                output=None,
+                error=str(e),
+            )
+                
+            feedback = await self.feedback_manager.evaluate(
+                step=step,
+                tool=tool,
+                validated_input=validated_input,
+                result=result,
+            )
 
+            attempt = StepAttempt(
+                attemp_number = attempt_number , 
+                tool_name = step.tool_name ,
+                tool_input = resolved_input ,
+                result = result ,
+                feedback = feedback
+            )
+
+            step.attempts.append(attempt)
+
+            if feedback.verdict == FeedbackVerdict.PASS :
+                step.output = result.output 
+                step.status = StepStatus.SUCCESS 
+
+                await context.set_result(
+                step.step_id,
+                result.output,
+                )
+                scheduler.mark_completed(step.step_id)
+
+            elif feedback.verdict == FeedbackVerdict.NEEDS_REVISION :
+                await self._handle_revision(
+                step,
+                feedback,
+                scheduler,
+                )
+
+            elif feedback.verdict == FeedbackVerdict.FAIL :
+
+                step.status = StepStatus.FAILED
+                step.error = feedback.reason
                 scheduler.mark_failed(step.step_id)
+
+    async def _handle_revision(
+        self,
+        step: PlanStep,
+        feedback: Feedback,
+        scheduler: Scheduler,
+    ):
+            if step.retries >= step.max_retries:
+               step.status = StepStatus.FAILED
+               step.error = (
+               f"Maximum retries exceeded. "
+               f"Last feedback: {feedback.reason}"
+               )
+               scheduler.mark_failed(step.step_id)
+               return
+            
+            last_attempt = step.attempts[-1]
+
+            recovery_input = await self.recovery_manager.recover(
+            step=step,
+            attempt=last_attempt,
+            feedback=feedback,
+            )
+
+            if recovery_input is None:
+               step.status = StepStatus.FAILED
+               step.error = (
+               "Revision requested but recovery "
+               "could not produce new input."
+               )
+               scheduler.mark_failed(step.step_id)
+               return
+
+            last_attempt.recovery_input = recovery_input
+            step.retries += 1
+            step.status = StepStatus.PENDING
+
+    def _get_attempt_input(self, step: PlanStep) -> dict:
+        """
+        Return the input that should be used for the next attempt.
+        """
+
+        if not step.attempts:
+            # First attempt
+            return step.tool_input
+        
+        # Retry input will eventually come from RecoveryManager.
+        last_attempt = step.attempts[-1]
+
+        if last_attempt.recovery_input is None:
+            raise RuntimeError(
+               f"No recovery input available for {step.step_id}"
+            )
+        
+        return last_attempt.recovery_input     
 
     def _fail_remaining(
         self,

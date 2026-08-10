@@ -4,7 +4,7 @@ from backend.scheduler.scheduler import Scheduler
 from backend.models.step_attempt import StepAttempt
 from backend.models.plan import PlanStep, StepStatus , Plan
 from backend.tools.registry import ToolRegistry
-from backend.tools.base_tools import ToolResult
+from backend.tools.base_tools import ToolResult 
 from backend.models.feedback import FeedbackVerdict , Feedback
 from backend.agent.recovery import RecoveryManager
 from backend.agent.feedback_manager import FeedbackManager
@@ -77,7 +77,7 @@ class ParallelExecutor:
 
             try:
 
-                tool = self.registry.get(step.tool_name)
+                tool = self.registry.get_tool(step.tool_name)
                 validated_input = tool.input_schema(**resolved_input)
 
                 result = await asyncio.wait_for(
@@ -95,6 +95,8 @@ class ParallelExecutor:
 
             feedback_manager = FeedbackManager()
 
+            tool = self.registry.get_tool(step.tool_name)
+
             feedback = await feedback_manager.evaluate(
                 step=step,
                 tool=tool,
@@ -103,12 +105,14 @@ class ParallelExecutor:
             )
 
             attempt = StepAttempt(
-                attemp_number = attempt_number , 
+                attempt_number = attempt_number , 
                 tool_name = step.tool_name ,
                 tool_input = resolved_input ,
                 result = result ,
-                feedback = feedback
+                feedback = feedback ,
             )
+            print("parallel_executor.py line 114 " )
+            print(attempt)
 
             step.attempt_history.append({
                 "attempt_number" : attempt_number , 
@@ -118,17 +122,17 @@ class ParallelExecutor:
             })
 
             step.attempts.append(attempt)
-
+            print("feedback verdict is -> " , feedback.verdict)
             if feedback.verdict == FeedbackVerdict.PASS :
                 step.output = result.output 
                 step.status = StepStatus.SUCCESS 
 
-                await context.set_result(
+                context.set_result(
                 step.step_id,
                 result.output,
                 )
                 scheduler.mark_completed(step.step_id)
-
+            
             elif feedback.verdict == FeedbackVerdict.NEEDS_REVISION :
                 await self._handle_revision(
                 step,
@@ -141,13 +145,14 @@ class ParallelExecutor:
                 step.status = StepStatus.FAILED
                 step.error = feedback.reason
                 scheduler.mark_failed(step.step_id)
-
+            
     async def _handle_revision(
         self,
         step: PlanStep,
         feedback: Feedback,
         scheduler: Scheduler,
     ):
+            print("inside handle rev")
             if step.retries >= step.max_retries:
                step.status = StepStatus.FAILED
                step.error = (
@@ -155,6 +160,7 @@ class ParallelExecutor:
                f"Last feedback: {feedback.reason}"
                )
                scheduler.mark_failed(step.step_id)
+               print("max retries done")
                return
             
             last_attempt = step.attempts[-1]
@@ -168,6 +174,7 @@ class ParallelExecutor:
             )
 
             if recovery_input is None:
+               print("recovery is none *********")
                step.status = StepStatus.FAILED
                step.error = (
                "Revision requested but recovery "
@@ -178,7 +185,9 @@ class ParallelExecutor:
 
             last_attempt.recovery_input = recovery_input
             step.retries += 1
+            print(step.retries)
             step.status = StepStatus.PENDING
+            scheduler.dispatched.discard(step.step_id)
 
     def _get_attempt_input(self, step: PlanStep) -> dict:
         """

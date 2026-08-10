@@ -15,7 +15,7 @@ class StepStatus(str, Enum):
 
 
 @dataclass
-class PlanStep:
+class PlanStep(BaseModel):
     
     step_id : str
     tool_name: str
@@ -32,7 +32,7 @@ class PlanStep:
     max_retries : int = 2 
 
     attempts : list[StepAttempt] = Field(default_factory = list)
-    attempt_history : list[dict] = []
+    attempt_history : list[dict] = Field(default_factory = list)
     
 
 

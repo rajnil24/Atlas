@@ -32,6 +32,7 @@ class PlanStep:
     max_retries : int = 2 
 
     attempts : list[StepAttempt] = Field(default_factory = list)
+    attempt_history : list[dict] = []
     
 
 

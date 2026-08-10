@@ -1,5 +1,4 @@
 import asyncio
-
 from backend.agent.execution_context import ExecutionContext
 from backend.scheduler.scheduler import Scheduler
 from backend.models.step_attempt import StepAttempt
@@ -7,6 +6,8 @@ from backend.models.plan import PlanStep, StepStatus , Plan
 from backend.tools.registry import ToolRegistry
 from backend.tools.base_tools import ToolResult
 from backend.models.feedback import FeedbackVerdict , Feedback
+from backend.agent.recovery import RecoveryManager
+from backend.agent.feedback_manager import FeedbackManager
 
 class ParallelExecutor:
 
@@ -91,8 +92,10 @@ class ParallelExecutor:
                 output=None,
                 error=str(e),
             )
-                
-            feedback = await self.feedback_manager.evaluate(
+
+            feedback_manager = FeedbackManager()
+
+            feedback = await feedback_manager.evaluate(
                 step=step,
                 tool=tool,
                 validated_input=validated_input,
@@ -106,6 +109,13 @@ class ParallelExecutor:
                 result = result ,
                 feedback = feedback
             )
+
+            step.attempt_history.append({
+                "attempt_number" : attempt_number , 
+                "tool_input" : attempt_input ,
+                "result" : result.model_dump() ,
+                "feedback" : feedback.model_dump() ,
+            })
 
             step.attempts.append(attempt)
 
@@ -149,7 +159,9 @@ class ParallelExecutor:
             
             last_attempt = step.attempts[-1]
 
-            recovery_input = await self.recovery_manager.recover(
+            recovery_manager = RecoveryManager()
+
+            recovery_input = await recovery_manager.recover(
             step=step,
             attempt=last_attempt,
             feedback=feedback,

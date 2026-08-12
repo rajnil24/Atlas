@@ -21,7 +21,6 @@ class ParallelExecutor:
         self.semaphore = asyncio.Semaphore(max_concurrency)
         self.step_timeout = step_timeout
 
-
     async def execute_plan(self, plan: Plan) -> ExecutionContext:
 
         context = ExecutionContext()
@@ -145,6 +144,8 @@ class ParallelExecutor:
                 step.status = StepStatus.FAILED
                 step.error = feedback.reason
                 scheduler.mark_failed(step.step_id)
+
+            print(step.attempt_history)
             
     async def _handle_revision(
         self,

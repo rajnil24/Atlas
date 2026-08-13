@@ -1,0 +1,16 @@
+# atlas/docker-compose.yml
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: atlas-postgres
+    environment:
+      POSTGRES_USER: atlas
+      POSTGRES_PASSWORD: atlas_dev_pw
+      POSTGRES_DB: atlas_memory
+    ports:
+      - "5432:5432"
+    volumes:
+      - atlas_pg_data:/var/lib/postgresql/data
+
+volumes:
+  atlas_pg_data:

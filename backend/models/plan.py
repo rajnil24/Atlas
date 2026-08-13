@@ -41,3 +41,5 @@ class PlanStep(BaseModel):
 class Plan(BaseModel):
     steps: list[PlanStep] = field(default_factory=list)
     plan_response : str = ""
+
+

@@ -89,10 +89,18 @@ class Agent:
         final_result = context.get_result(id)
         #print("final_result is ->" , final_result)
 
+        for step in plan :
+             attempt_history = step.attempt_history
+             print("attempt history is ->" , attempt_history)
+
         async def nl_ans( plan_response) :
             prompt = HUMAN_ANS_PROMPT.format(plan = plan_response ,message = message 
                                              ,final_result=final_result)
+            print("#################################")
+            print("human nlp prompt is -> , " ,prompt)
             reply = await llm.generate(prompt)
+            print("reply is ->" , reply)
+            print("#################################")
             return reply
         
         plan_response = plan.plan_response
@@ -104,5 +112,6 @@ class Agent:
         print("------------------------------------")
         print("context results are ->" , context.results)
         """
+
         return reply
         

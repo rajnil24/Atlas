@@ -30,5 +30,8 @@ def get_db():
 
 
 def init_db():
+
     from backend.db import models  # noqa: ensures models are registered before create_all
+    print("inside init_db")
     Base.metadata.create_all(bind=engine)
+    print("outside init_db")

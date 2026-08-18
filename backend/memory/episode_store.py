@@ -29,6 +29,7 @@ class EpisodicStore:
             )
             db.add(episode)
             db.commit()
+            print ("episode created , ->" , episode)
             return episode.id
         except SQLAlchemyError as e:
             db.rollback()
@@ -53,6 +54,7 @@ class EpisodicStore:
             ]
             db.bulk_save_objects(objects)
             db.commit()
+            print("bulk objects dispatched")
             return len(objects)
         except SQLAlchemyError as e:
             db.rollback()

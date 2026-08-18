@@ -1,45 +1,42 @@
-from groq import Groq
-from backend.config import GROQ_API_KEY
+#from groq import Groq
+from backend.config import GEMINI_API_KEY 
 import asyncio
-
+from google import genai
 class LLMClient:
 
     def __init__(self):
 
-        self.client = Groq(api_key=GROQ_API_KEY)
-        self.model = "llama-3.3-70b-versatile"
+        self.client = genai.Client(api_key = GEMINI_API_KEY )
+        self.model = "gemini-3.6-flash"
+
     
     async def generate(self, prompt: str) -> str:
 
-        response = await asyncio.to_thread(
-            self.client.chat.completions.create,
+        response = await self.client.aio.models.generate_content(
+
             model=self.model,
-            messages=[
-               {
-                "role": "user",
-                "content": prompt,
-               }
-            ],
+
+            contents=prompt,
+
         )
-        return response.choices[0].message.content
+        return response.text
     
     async def synthesize_response(self, prompt: str) -> str:
-        response =   self.client.chat.completions.create(
-        model=self.model,
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
-        return response.choices[0].message.content
+        response = await self.client.aio.models.generate_content(
+                    model=self.model,
+                    contents=prompt,
+                )
+        return response.text
 
     async def generate_response(self, messages: list) -> str:
 
-        response = await self.client.chat.completions.create(
-            model=self.model,
-            messages=messages
-        )
+        response = await self.client.aio.models.generate_content(
+                    model=self.model, 
+                    contents=messages,  
+                )
+        return response.text
 
-        return response.choices[0].message.content
+
+llm = LLMClient()
+resp = asyncio.run(llm.generate("hello"))
+print(resp)

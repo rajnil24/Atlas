@@ -52,7 +52,7 @@ class Extractor:
         self.semantic_store = SemanticStore()
         self.llm = LLMClient()
 
-    def run(self, user_id: str, session_id: str, episode_limit: int = 20):
+    async def run(self, user_id: str, session_id: str, episode_limit: int = 20):
         episodes = self.episodic_store.get_session_history(session_id, limit=episode_limit)
         if not episodes:
             return []
@@ -62,13 +62,19 @@ class Extractor:
             return []
 
         episode_text = "\n".join(f"[{e.role}] {e.content}" for e in reversed(relevant))
-
+        print("episode_text is " , episode_text)
         prompt = EXTRACTOR_PROMPT.format(episode_text=episode_text)
-        raw_response = self.llm.generate_response(prompt)
-
+        print("prompt is\n " , prompt)
+        raw_response =  await self.llm.generate_response(prompt)
+        raw_response = raw_response.replace("```json" , "")
+        raw_response = raw_response.replace("```" , "")
+        raw_response = raw_response.strip()
+        print("raw_response is " , raw_response)
         try:
             parsed = json.loads(raw_response)
+            print("parsing done")
             candidates = parsed.get("facts", [])
+            print("candidates are , " , candidates )
         except (json.JSONDecodeError, AttributeError):
             print("[Extractor] failed to parse LLM output, skipping this batch")
             return []

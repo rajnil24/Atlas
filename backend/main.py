@@ -1,7 +1,7 @@
+import uuid 
 from fastapi import FastAPI
 from pydantic import BaseModel
 from backend.services.llm import LLMClient
-from backend.services.chat_memory import ChatMemory
 from backend.agent.agent import Agent
 from backend.services.planner import Planner
 from backend.tools.registry import ToolRegistry
@@ -14,10 +14,20 @@ from backend.tools.llm_tool import LLMTool
 from backend.tools.calendar import CalendarTool
 from backend.tools.gmail import GmailTool
 from backend.services.code_writer import CodeWriterTool
+from backend.memory.working_memory import WorkingMemory
+from backend.memory.context_builder import ContextBuilder
 
 app = FastAPI()
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# GIVING USER AN IDENTITY 
+
 llm = LLMClient()
-memory = ChatMemory() 
+working_memory = WorkingMemory(max_tokens = 2000)
+context_builder = ContextBuilder(working_memory = working_memory , total_budget = 3000  )
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# TOOL REGISTRATION 
 
 registry = ToolRegistry() 
 registry.register(CalculatorTool())
@@ -31,23 +41,21 @@ registry.register(GmailTool())
 registry.register(CodeWriterTool())
 
 planner = Planner(llm , registry)
-agent = Agent(planner , registry)
+
 
 class ChatRequest(BaseModel):
+    user_id : str
     session_id: str
     message: str
+    
 
 @app.post("/chat")
 async def chat(request: ChatRequest):
     query = request.message 
-    session_id = request.session_id
-    history = memory.get_message(session_id)
-    memory.add_message(
-        query ,
-        session_id ,
-        role = "user"
-    )
-    reply = await agent.run(query , history)
+    user_id = request.user_id
+    session_id = str(uuid.uuid4())
+    agent = Agent(user_id , session_id , working_memory ,context_builder , planner , registry)
+    reply = await agent.run(query)
     memory.add_message(
         content =  reply ,
         session_id = request.session_id ,

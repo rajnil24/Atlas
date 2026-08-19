@@ -10,28 +10,33 @@ class Agent:
 
     def __init__(
         self,
+        user_id,
+        session_id,
+        working_memory,
+        context_builder,
         planner,
         registry
     ):
-
+        self.user_id = user_id 
+        self.session_id = session_id
+        self.working_memory = working_memory
+        self.context_builder = context_builder
         self.planner = planner
         self.registry = registry
 
     async def run(
         self,
-        message: str,
-        history: str,
-    ): 
-        plan : Plan = await self.planner.create_plan(message , history)
-        print("message is ->" ,message)
+        query: str
+    ):  
+        build_context = await self.context_builder.build(user_id = self.user_id , session_id = self.session_id , query = query)
+        plan : Plan = await self.planner.create_plan(query , build_context)
+        print("build_context is ->" ,build_context)
         print(plan)
         llm = LLMClient()
         if len(plan.steps) == 0:
             reply = await llm.generate(message)
             return reply
         
-        
-
         def serial_executor() :
             for step in plan.steps:
                         #print(step.step_id)

@@ -17,14 +17,17 @@ class Planner:
     
     async def create_plan(
     self,
-    message: str,
-    history: str,
+    query : str,
+    build_context,
     ):
        tools = self.registry.get_tools_description()
+       known_facts = build_context.get("known_facts" , "")
+       conversation_history = build_context.get("conversation_history" , "")
        prompt = PLANNER_PROMPT.format(
     tools=tools,
-    history=history,
-    message=message
+    conversation_history = conversation_history ,
+    known_facts=known_facts,
+    query=query
     )
        response = await self.llm.generate(prompt)
        

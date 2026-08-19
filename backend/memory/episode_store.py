@@ -20,7 +20,7 @@ class EpisodicStore:
         db = SessionLocal()
         try:
             episode = Episode(
-                id=str(uuid.uuid4()),
+                episode_id=str(uuid.uuid4()),
                 user_id=user_id,
                 session_id=session_id,
                 role=role,
@@ -30,7 +30,7 @@ class EpisodicStore:
             db.add(episode)
             db.commit()
             print ("episode created , ->" , episode)
-            return episode.id
+            return episode.episode_id
         except SQLAlchemyError as e:
             db.rollback()
             print(f"[EpisodicStore] write failed: {e}")
@@ -43,7 +43,7 @@ class EpisodicStore:
         try:
             objects = [
                 Episode(
-                    id=str(uuid.uuid4()),
+                    episode_id=str(uuid.uuid4()),
                     user_id=e["user_id"],
                     session_id=e["session_id"],
                     role=e["role"],

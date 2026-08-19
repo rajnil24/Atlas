@@ -16,11 +16,14 @@ Available tools:
 
 Conversation History:
 
-{history}
+{conversation_history}
 
 User Request:
 
-{message}
+{query}
+
+Known Facts about User:
+{known_facts}
 
 Return ONLY JSON.
 

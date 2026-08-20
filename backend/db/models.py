@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, String, Text, DateTime, Float
 from pgvector.sqlalchemy import Vector
 from backend.db.connection import Base
+from sqlalchemy.dialects.postgresql import JSONB 
 
 EMBEDDING_DIM = 384  
 
@@ -13,6 +14,7 @@ class Episode(Base):
     session_id = Column(String, index=True, nullable=False)
     role = Column(String, nullable=False)
     content = Column(Text, nullable=False)
+    meta = Column(JSONB, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
 
 

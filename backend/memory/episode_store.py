@@ -16,13 +16,15 @@ class EpisodicStore:
         session_id: str,
         role: str,
         content: str,
+        meta : dict | None = None ,
     ) -> Optional[str]:
         db = SessionLocal()
         try:
             episode = Episode(
-                episode_id=str(uuid.uuid4()),
+                id=str(uuid.uuid4()),
                 user_id=user_id,
                 session_id=session_id,
+                meta=meta,
                 role=role,
                 content=content,
                 created_at=datetime.now(timezone.utc),
@@ -43,9 +45,10 @@ class EpisodicStore:
         try:
             objects = [
                 Episode(
-                    episode_id=str(uuid.uuid4()),
+                    id=str(uuid.uuid4()),
                     user_id=e["user_id"],
                     session_id=e["session_id"],
+                    meta=e.get("meta"),
                     role=e["role"],
                     content=e["content"],
                     created_at=datetime.now(timezone.utc),

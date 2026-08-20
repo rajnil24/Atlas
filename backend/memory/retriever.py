@@ -10,7 +10,7 @@ class MemoryRetriever:
         self.min_confidence = min_confidence
         self.top_k = top_k
 
-    def get_relevant_facts(self, user_id: str, query: str) -> list[str]:
+    async def get_relevant_facts(self, user_id: str, query: str) -> list[str]:
         query_embedding = _embedding_model.encode(query).tolist()
 
         facts = self.semantic_store.retrieve(

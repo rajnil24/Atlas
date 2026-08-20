@@ -16,6 +16,7 @@ from backend.tools.gmail import GmailTool
 from backend.services.code_writer import CodeWriterTool
 from backend.memory.working_memory import WorkingMemory
 from backend.memory.context_builder import ContextBuilder
+import asyncio
 
 app = FastAPI()
 
@@ -50,18 +51,18 @@ class ChatRequest(BaseModel):
     
 
 @app.post("/chat")
-async def chat(request: ChatRequest):
-    query = request.message 
-    user_id = request.user_id
+async def chat(query :str , user_id : str):
+    #query = request.message 
+    #user_id = request.user_id
     session_id = str(uuid.uuid4())
     agent = Agent(user_id , session_id , working_memory ,context_builder , planner , registry)
     reply = await agent.run(query)
-    memory.add_message(
-        content =  reply ,
-        session_id = request.session_id ,
-        role = "assistant"
-    )
- 
+    print("final reply is -> " ,reply )
     return {
         "reply": reply
     }
+
+
+query = "hi , i am rajnil , i am about to get married , can you tell me about something rituals in chirtian marriages "
+user_id = str(uuid.uuid4())
+asyncio.run(chat(query , user_id))

@@ -7,7 +7,7 @@ class LLMClient:
     def __init__(self):
 
         self.client = genai.Client(api_key = GEMINI_API_KEY )
-        self.model = "gemini-3-flash"
+        self.model = "gemini-3.1-flash-lite"
         
 
     

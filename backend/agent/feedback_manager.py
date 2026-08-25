@@ -103,6 +103,20 @@ CURRENT RESULT:
 
 PREVIOUS ATTEMPTS:
 {previous_attempts}
+
+The verdict MUST be exactly one of:
+
+"pass"
+"needs_revision"
+"fail"
+
+Return lowercase values only.
+
+Never return:
+"PASS"
+"Pass"
+"NEEDS_REVISION"
+"Fail"
 """
 
         prompt = CRITIC_PROMPT.format(
@@ -112,9 +126,9 @@ PREVIOUS ATTEMPTS:
         current_result=result.model_dump(),
         previous_attempts=previous_attempts,
         )
-
+        print("inside feedback_mamager.py line 129")
         response = await llm.generate(prompt)
-
+        print("response is ->>" , response)
         return self._parse_feedback(response)
 
     def _parse_feedback(self, response: str) -> Feedback:
@@ -136,5 +150,6 @@ PREVIOUS ATTEMPTS:
             cleaned = "\n".join(lines)
 
         data = json.loads(cleaned)
-
+        print("inside feedback_mamager.py line 153")
+        print(data)
         return Feedback.model_validate(data)

@@ -1,5 +1,6 @@
 import uuid 
 from fastapi import FastAPI
+from backend.api.users import router as users_router
 from pydantic import BaseModel
 from backend.services.llm import LLMClient
 from backend.agent.agent import Agent
@@ -18,8 +19,10 @@ from backend.memory.working_memory import WorkingMemory
 from backend.memory.context_builder import ContextBuilder
 import asyncio
 
-app = FastAPI()
-
+app = FastAPI(
+    title = "Atlas API" ,
+)
+app.include_router(users_router)
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # GIVING USER AN IDENTITY 
 
@@ -63,6 +66,11 @@ async def chat(query :str , user_id : str):
     }
 
 
-query = "hi , i am rajnil , i am about to get married , can you tell me about something rituals in chirtian marriages "
+query = "hi , i am rajnil , what is machine learning  "
 user_id = str(uuid.uuid4())
-asyncio.run(chat(query , user_id))
+def call (query , user_id) :
+    reply = asyncio.run(chat(query , user_id)) 
+    print("final -> reply is " , reply)
+
+call(query , user_id)
+

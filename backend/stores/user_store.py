@@ -33,7 +33,7 @@ class UserStore:
         finally:
             db.close()
 
-    def get_user(self, user_id: str) -> User | None:
+    def get_user_by_id(self, user_id: str) -> User | None:
 
         db = SessionLocal()
 

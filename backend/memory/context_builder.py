@@ -33,7 +33,7 @@ class ContextBuilder:
 
         # Fallback: if working memory is thin (new session / just restarted),
         # pull recent episodes from Postgres so context isn't empty
-        if len(self.working_memory.turns) < 2:
+        if self.working_memory.get_turn_count() < 2:
             recent_episodes = self.episodic_store.get_session_history(session_id, limit=5)
             if recent_episodes:
                history_text = "\n".join(

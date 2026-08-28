@@ -113,6 +113,7 @@ class Agent:
             self.episodic_store.write_episodes_batch,
             episodes,
         )
+
         print("episodes are ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" , episodes)
         self.working_memory.add_turn(role = "user" , content = query)
         self.working_memory.add_turn(role = "assistant" , content = reply)
@@ -120,5 +121,7 @@ class Agent:
         
         await self.extractor.run(user_id = self.user_id , session_id = self.session_id , episode_limit = 20)
         print("line 122 agent.py")
+
+        
         return reply
         

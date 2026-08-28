@@ -21,6 +21,9 @@ class SessionResponse(BaseModel):
     user_id: str
     title: str
 
+class UpdateSessionRequest(BaseModel):
+    title: str
+
 @router.post(
     "",
     response_model=SessionResponse,
@@ -73,3 +76,55 @@ def get_user_sessions(user_id: str):
         )
         for session in sessions
     ]
+
+@router.patch(
+    "/{user_id}/sessions/{session_id}",
+    response_model=SessionResponse,
+)
+def update_session(
+    user_id: str,
+    session_id: str,
+    request: UpdateSessionRequest,
+):
+
+    session = session_store.update_session_title(
+        user_id=user_id,
+        session_id=session_id,
+        title=request.title,
+    )
+
+    if not session:
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found",
+        )
+
+    return SessionResponse(
+        id=session.id,
+        user_id=session.user_id,
+        title=session.title,
+    )
+
+@router.delete(
+    "/{user_id}/sessions/{session_id}",
+)
+def delete_session(
+    user_id: str,
+    session_id: str,
+):
+
+    deleted = session_store.delete_session(
+        user_id=user_id,
+        session_id=session_id,
+    )
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found",
+        )
+
+    return {
+        "message": "Session deleted successfully",
+        "session_id": session_id,
+    }

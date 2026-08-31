@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["python", "-u", "-c", "print('TEST START', flush=True); import backend.api.users; print('USERS OK', flush=True); import backend.api.sessions; print('SESSIONS OK', flush=True); import backend.api.messages; print('MESSAGES OK', flush=True); print('ALL IMPORTS OK', flush=True)"]
+CMD ["python", "-u", "-c", "print('START', flush=True); import backend.stores.message_store; print('MESSAGE STORE OK', flush=True); import backend.stores.session_store; print('SESSION STORE OK', flush=True); import backend.memory.working_memory; print('WORKING MEMORY OK', flush=True); import backend.memory.context_builder; print('CONTEXT BUILDER OK', flush=True); import backend.agent.agent; print('AGENT OK', flush=True); import backend.core.dependencies; print('DEPENDENCIES OK', flush=True)"]

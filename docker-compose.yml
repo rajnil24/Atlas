@@ -8,6 +8,7 @@ services:
       - "5432:5432"
     volumes:
       - atlas_pg_data:/var/lib/postgresql/data
+      - ./backend/docker/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -29,6 +30,9 @@ services:
       - "8000:8000"
     env_file:
       - backend/.env
+    volumes:
+      - ./backend/google/credentials.json:/app/backend/google/credentials.json
+      - ./backend/google/token.json:/app/backend/google/token.json
     depends_on:
       postgres:
         condition: service_healthy

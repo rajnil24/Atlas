@@ -2,7 +2,7 @@ from typing import Literal
 from pydantic import BaseModel
 from backend.tools.base_tools import BaseTool
 from backend.tools.base_tools import ToolResult
-from backend.config import GROQ_API_KEY 
+from backend.config import settings 
 from groq import Groq 
 
 class LLMToolInput(BaseModel):
@@ -21,7 +21,7 @@ class LLMToolInput(BaseModel):
 class LLMTool(BaseTool) :
     def __init__(self):
         self.client = Groq(
-        api_key= GROQ_API_KEY
+        api_key= settings.groq_api_key
     )
         self.model = "llama-3.3-70b-versatile"
     

@@ -1,7 +1,7 @@
 import requests
 from pydantic import BaseModel
 from backend.tools.base_tools import BaseTool, ToolResult
-from backend.config import OPEN_WEATHER_API_KEY
+from backend.config import settings
 
 
 class WeatherInput(BaseModel):
@@ -26,7 +26,7 @@ class WeatherTool(BaseTool):
         url = "https://api.openweathermap.org/data/2.5/weather"
         params = {
             "q": city,
-            "appid": OPEN_WEATHER_API_KEY,
+            "appid": settings.open_weather_api_key,
             "units": "metric"
         }
 

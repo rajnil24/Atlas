@@ -1,12 +1,11 @@
 #from groq import Groq
-from backend.config import GEMINI_API_KEY 
-import asyncio
+from backend.config import settings 
 from google import genai
 class LLMClient:
 
     def __init__(self):
 
-        self.client = genai.Client(api_key = GEMINI_API_KEY )
+        self.client = genai.Client(api_key = settings.gemini_api_key )
         self.model = "gemini-3.1-flash-lite"
         
 

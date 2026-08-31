@@ -27,16 +27,6 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
-
-settings.postgres_user = os.getenv('POSTGRES_USER')
-settings.postgres_password = os.getenv('POSTGRES_PASSWORD')
-settings.postgres_db = os.getenv('POSTGRES_DB')
-settings.database_url = (
-    f"postgresql://{settings.postgres_user}:{settings.postgres_password}"
-    f"@localhost:5432/{settings.postgres_db}"
-)
 load_dotenv()
 settings.groq_api_key = os.getenv("GROQ_API_KEY")
 settings.open_weather_api_key = os.getenv("OPEN_WEATHER_API_KEY")

@@ -1,5 +1,5 @@
 from pydantic import BaseModel 
-from backend.config import TAVILY_API_KEY 
+from backend.config import settings 
 from backend.tools.base_tools import BaseTool , ToolResult 
 from tavily import TavilyClient
 
@@ -14,7 +14,7 @@ class WebSearchTool(BaseTool) :
     async def run(self , input_data : WebSearchInput) :
         #print(type(input_data))
         #print(input_data)
-        client = TavilyClient(api_key = TAVILY_API_KEY)
+        client = TavilyClient(api_key = settings.tavily_api_key)
         query = input_data.query
         #print(query)
         try :

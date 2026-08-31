@@ -1,3 +1,5 @@
+import os 
+print("DATABASE_URL exists:", os.getenv("DATABASE_URL") is not None)
 import uuid 
 from fastapi import FastAPI
 from backend.api.users import router as users_router

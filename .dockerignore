@@ -1,0 +1,8 @@
+backend/.env
+.git
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+backend/google/credentials.json
+backend/google/token.json

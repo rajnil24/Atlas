@@ -4,6 +4,19 @@ RUN useradd \
     --create-home \
     --shell /bin/bash \
     atlas
+
 RUN mkdir /app && chown atlas:atlas /app
+
 WORKDIR /app
+
+COPY --chown=atlas:atlas requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY --chown=atlas:atlas backend ./backend
+COPY --chown=atlas:atlas client ./client
+COPY --chown=atlas:atlas README.md .
+
 USER atlas
+
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

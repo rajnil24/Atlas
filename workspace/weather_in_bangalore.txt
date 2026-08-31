@@ -1,1 +1,0 @@
-{'city': 'Bengaluru', 'country': 'IN', 'temperature': 24.62, 'humidity': 78, 'description': 'overcast clouds', 'wind_speed': 5.99, 'time_zone': 19800, 'visibility': 10000}

@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: atlas-postgres
+    env_file:
+      - backend/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - atlas_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  
+  redis :
+    image : redis:7-alpine
+    container_name: atlas-redis
+    ports:
+      - "6379:6379"
+
+  atlas:
+    build:
+      context: .
+      dockerfile: backend/docker/Dockerfile
+    container_name: atlas
+    ports:
+      - "8000:8000"
+    env_file:
+      - backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  atlas_pg_data:

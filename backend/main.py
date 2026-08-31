@@ -16,11 +16,7 @@ app.include_router(messages_router)
 @app.get("/")
 
 async def root():
-
     return {"message": "Atlas is running"}
-
-    
-
 @app.post("/chat")
 
 async def main():

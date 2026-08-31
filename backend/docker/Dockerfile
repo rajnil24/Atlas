@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["python", "-c", "print('HELLO FROM PYTHON', flush=True)"]
+CMD ["python", "-u", "-c", "print('TEST START', flush=True); import backend.api.users; print('USERS OK', flush=True); import backend.api.sessions; print('SESSIONS OK', flush=True); import backend.api.messages; print('MESSAGES OK', flush=True); print('ALL IMPORTS OK', flush=True)"]

@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["sh", "-c", "exec uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
+CMD ["sh", "-c", "echo 'ATLAS CONTAINER STARTED' && echo \"PORT=$PORT\" && echo \"DATABASE_URL exists: ${DATABASE_URL:+YES}\" && uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-10000}"]

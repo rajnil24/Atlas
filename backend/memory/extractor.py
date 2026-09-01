@@ -44,7 +44,14 @@ Return ONLY valid JSON, no explanation, matching this schema:
 }}
 """
 
-_embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+_embedding_model = None
+
+def get_embedding_model():
+
+    global _embedding_model
+    if _embedding_model is None:
+        _embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+    return _embedding_model
 
 class Extractor:
     def __init__(self):
@@ -86,7 +93,7 @@ class Extractor:
             if not fact_text:
                 continue
 
-            embedding = _embedding_model.encode(fact_text).tolist()
+            embedding = get_embedding_model().encode(fact_text).tolist()
 
             fact_id = self.semantic_store.upsert_fact(
                 user_id=user_id,

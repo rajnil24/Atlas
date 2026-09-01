@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["python", "-u", "-c", "print('START', flush=True); import backend.memory.retriever; print('RETRIEVER IMPORT OK', flush=True)"]
+CMD ["python", "-u", "-c", "print('START', flush=True); import backend.memory.episode_store; print('EPISODIC STORE OK', flush=True)"]

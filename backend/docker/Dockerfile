@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["python", "-u", "-c", "print('START', flush=True); import backend.memory.retriever; print('RETRIEVER OK', flush=True); import backend.memory.episode_store; print('EPISODIC STORE OK', flush=True); import backend.memory.context_builder; print('CONTEXT BUILDER OK', flush=True)"]
+CMD ["python", "-u", "-c", "print('START', flush=True); import sentence_transformers; print('SENTENCE TRANSFORMERS OK', flush=True); from backend.memory.semantic_store import SemanticStore; print('SEMANTIC STORE OK', flush=True)"]

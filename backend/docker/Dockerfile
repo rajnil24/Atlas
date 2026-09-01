@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["python", "-u", "-c", "print('START', flush=True); from backend.memory.semantic_store import SemanticStore; print('SEMANTIC STORE OK', flush=True)"]
+CMD ["python", "-u", "-c", "print('START', flush=True); import backend.memory.retriever; print('RETRIEVER IMPORT OK', flush=True)"]

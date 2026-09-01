@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["python", "-u", "-c", "print('START', flush=True); import torch; print('TORCH OK', torch.__version__, flush=True); import transformers; print('TRANSFORMERS OK', transformers.__version__, flush=True); import sentence_transformers; print('SENTENCE TRANSFORMERS OK', flush=True)"]
+CMD ["python", "-u", "-c", "print('START', flush=True); from backend.memory.semantic_store import SemanticStore; print('SEMANTIC STORE OK', flush=True)"]

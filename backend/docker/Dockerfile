@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["python", "-u", "-c", "print('START', flush=True); from backend.services.llm import LLMClient; print('LLM OK', flush=True)"]
+CMD ["python", "-u", "-c", "print('START', flush=True); from backend.memory.extractor import Extractor; print('EXTRACTOR OK', flush=True)"]

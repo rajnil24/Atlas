@@ -41,12 +41,9 @@ Rules:
 """
     
     def __init__(self):
-        self.creds = authenticate()
-        self.service = build(
-        "gmail",
-        "v1",
-        credentials=self.creds
-        )
+        self.creds = None 
+        self.service = None 
+    
         self.operations = {
         "send": self.send_email,
         #"read": self.read_email,
@@ -56,6 +53,16 @@ Rules:
         #"mark_read": self.mark_read,
         #"mark_unread": self.mark_unread,
         }
+
+    def _get_service(self):
+        if self.service is None:
+            self.creds = authenticate()
+            self.service = build(
+                "gmail",
+                "v1",
+                credentials=self.creds
+            )
+        return self.service
     
     async def run(self, input_data: GmailToolInput) -> ToolResult:
 
@@ -68,6 +75,7 @@ Rules:
         return handler(input_data)
     
     def send_email(self,input_data: GmailToolInput) -> ToolResult:
+        service = self._get_service()
         message = MIMEText(input_data.body) # package done as MIME object
         print(type(message))
         print(message)
@@ -76,7 +84,7 @@ Rules:
         raw_message = base64.urlsafe_b64encode(   # Binary to Base 64 text encoding , and ready to dispatch
                       message.as_bytes()
                     ).decode()
-        self.service.users().messages().send(
+        service.users().messages().send(
                     userId="me",
                     body={
                     "raw": raw_message
@@ -84,7 +92,8 @@ Rules:
 ).execute()
         
     def search_email(self, input_data: GmailToolInput) -> ToolResult:
-        results = self.service.users().messages().list(
+        service = self._get_service()
+        results = service.users().messages().list(
         userId="me",
         q=input_data.query
         ).execute()

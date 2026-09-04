@@ -1,4 +1,3 @@
-
 from datetime import datetime, timezone
 from typing import Optional
 from googleapiclient.discovery import build
@@ -69,8 +68,8 @@ Rules
     
     
     def __init__(self):
-        creds = authenticate()
-        self.service = build( "calendar", "v3", credentials=creds)
+        self.creds = None
+        self.service = None  
         self.operations = {
             "read": self.read_events,
             "create": self.create_event,
@@ -78,6 +77,12 @@ Rules
             "delete": self.delete_event,
             "list": self.list_calendars
         }
+
+    def _get_service(self):
+            if self.service is None:
+                self.creds = authenticate()
+                self.service = build( "calendar", "v3", credentials=self.creds)
+            return self.service
     
     async def run(self, input_data: CalendarInput) -> ToolResult:
         #print("inside run calendar.py")
@@ -92,11 +97,12 @@ Rules
         return handler(input_data)
     
     def read_events(self,input_data: CalendarInput) -> ToolResult:
+        service = self._get_service()
         now = datetime.now(
             timezone.utc
         ).isoformat()
         response = (
-            self.service.events()
+            service.events()
             .list(
                 calendarId="primary",
                 timeMin=now,
@@ -134,6 +140,7 @@ Rules
         )
     
     def create_event(self,input_data: CalendarInput ) -> ToolResult:
+        service = self._get_service()
         body = {
             "summary": input_data.summary,
             "description": input_data.description,
@@ -148,7 +155,7 @@ Rules
             }
         }
         created_event = (
-            self.service.events()
+            service.events()
             .insert(
                 calendarId="primary",
                 body=body
@@ -165,9 +172,10 @@ Rules
         )
     
     def find_event(self,summary: str):
+        service = self._get_service()
         now = datetime.now(timezone.utc).isoformat()
         response = (
-        self.service.events()
+        service.events()
         .list(
             calendarId="primary",
             timeMin=now,
@@ -183,6 +191,7 @@ Rules
         return None
     
     def update_event(self,input_data: CalendarInput) -> ToolResult:
+        service = self._get_service()
         event = self.find_event(input_data.summary)
         if event is None:
             return ToolResult(
@@ -211,7 +220,7 @@ Rules
             event["summary"] = input_data.summary
 
         updated = (
-        self.service.events()
+        service.events()
         .update(
             calendarId="primary",
             eventId=event["id"],
@@ -228,6 +237,7 @@ Rules
     )
 
     def delete_event(self,input_data: CalendarInput) -> ToolResult:
+        service = self._get_service()
         event = self.find_event(input_data.summary)
         if event is None:
             return ToolResult(
@@ -235,7 +245,7 @@ Rules
             error="Event not found."
         )
         (
-        self.service.events()
+        service.events()
         .delete(
             calendarId="primary",
             eventId=event["id"]
@@ -248,8 +258,9 @@ Rules
     )
 
     def list_calendars(self,input_data: CalendarInput) -> ToolResult:
+        service = self._get_service()
         response = (
-        self.service.calendarList()
+        service.calendarList()
         .list()
         .execute()
         )

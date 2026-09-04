@@ -18,4 +18,4 @@ COPY --chown=atlas:atlas client ./client
 COPY --chown=atlas:atlas README.md .
 
 USER atlas
-CMD ["python", "-u", "-c", "print('START', flush=True); from sentence_transformers import SentenceTransformer; print('IMPORT OK', flush=True); model=SentenceTransformer('all-MiniLM-L6-v2'); print('MODEL OK', flush=True)"]
+CMD ["sh", "-c", "exec uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

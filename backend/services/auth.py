@@ -2,11 +2,18 @@ import os
 from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
+from dotenv import load_dotenv
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parents[1]
+ENV_FILE = BASE_DIR / ".env"
+load_dotenv(ENV_FILE)
+
+
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+print(JWT_SECRET_KEY)
 
 JWT_ALGORITHM = "HS256"
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-
 if not JWT_SECRET_KEY:
     raise RuntimeError("JWT_SECRET_KEY is not configured")
 

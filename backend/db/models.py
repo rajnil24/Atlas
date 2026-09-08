@@ -4,7 +4,9 @@ from pgvector.sqlalchemy import Vector
 from backend.db.connection import Base
 from sqlalchemy.dialects.postgresql import JSONB 
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 import uuid 
+
 EMBEDDING_DIM = 384  
 
 class Episode(Base):
@@ -38,6 +40,8 @@ class User(Base):
         primary_key=True,
         default=lambda: str(uuid.uuid4()),
     )
+
+    password_hash = Column(String, nullable=True)
 
     email = Column(
         String,

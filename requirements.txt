@@ -103,3 +103,6 @@ uritemplate==4.2.0
 uvicorn==0.52.1
 websockets==16.1.1
 zstandard==0.25.0
+bcrypt
+PyJWT
+email-validator

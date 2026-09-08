@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr , Field
+from backend.services.auth import hash_password
 from backend.stores.user_store import UserStore
 
 
@@ -13,7 +14,11 @@ user_store = UserStore()
 
 class CreateUserRequest(BaseModel):
     email: EmailStr
-    name: str | None = None
+    name: str | None = Field(default=None, max_length=100)
+    password: str = Field(
+        min_length=8,
+        max_length=72,
+    )
 
 
 class UserResponse(BaseModel):
@@ -39,9 +44,20 @@ def create_user(request: CreateUserRequest):
             detail="User with this email already exists",
         )
 
+    try:
+        password_hash = hash_password(
+            request.password
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        )
+
     user = user_store.create_user(
         email=request.email,
         name=request.name,
+        password_hash=password_hash,
     )
 
     if not user:
@@ -51,7 +67,7 @@ def create_user(request: CreateUserRequest):
         )
 
     return UserResponse(
-        id=user.id,
+        id=str(user.id),
         email=user.email,
         name=user.name,
     )

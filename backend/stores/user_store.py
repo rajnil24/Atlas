@@ -9,6 +9,7 @@ class UserStore:
         self,
         email: str,
         name: str | None = None,
+        password_hash: str | None = None
     ) -> User | None:
 
         db = SessionLocal()
@@ -17,6 +18,7 @@ class UserStore:
             user = User(
                 email=email,
                 name=name,
+                password_hash=password_hash,
             )
 
             db.add(user)

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from backend.api.users import router as users_router
 from backend.api.sessions import router as sessions_router
 from backend.api.messages import router as messages_router
+from backend.api.auth import router as auth_router
 import asyncio
 
 app = FastAPI(
@@ -12,6 +13,7 @@ app = FastAPI(
 app.include_router(users_router)
 app.include_router(sessions_router)
 app.include_router(messages_router)
+app.include_router(auth_router)
 
 @app.get("/")
 

@@ -1,0 +1,37 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
+
+.container {
+  width: 600px;
+  margin: 80px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+}
+
+input,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 10px 0;
+  padding: 12px;
+  font-size: 16px;
+}
+
+textarea {
+  height: 120px;
+}
+
+button {
+  padding: 12px 20px;
+  cursor: pointer;
+}
+
+.reply {
+  margin-top: 30px;
+  padding: 15px;
+  background: #f0f0f0;
+}

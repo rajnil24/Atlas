@@ -4,16 +4,19 @@ import bcrypt
 import jwt
 from dotenv import load_dotenv
 from pathlib import Path
+import hashlib 
+import secrets
 
 BASE_DIR = Path(__file__).resolve().parents[1]
+
 ENV_FILE = BASE_DIR / ".env"
+
 load_dotenv(ENV_FILE)
 
-
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-print(JWT_SECRET_KEY)
 
 JWT_ALGORITHM = "HS256"
+
 if not JWT_SECRET_KEY:
     raise RuntimeError("JWT_SECRET_KEY is not configured")
 
@@ -81,3 +84,16 @@ def decode_access_token(token: str) -> dict:
     )
 
     return payload
+
+
+REFRESH_TOKEN_EXPIRE_DAYS = 7
+
+def create_refresh_token() -> str:
+    return secrets.token_urlsafe(64)
+
+
+def hash_refresh_token(token: str) -> str:
+    return hashlib.sha256(
+        token.encode("utf-8")
+    ).hexdigest()
+

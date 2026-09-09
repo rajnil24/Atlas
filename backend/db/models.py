@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Text, DateTime, Float , ForeignKey , JSON
+from sqlalchemy import Column, String, Text, DateTime, Float , ForeignKey , JSON , Boolean
 from pgvector.sqlalchemy import Vector
 from backend.db.connection import Base
 from sqlalchemy.dialects.postgresql import JSONB 
@@ -154,4 +154,40 @@ class Message(Base):
     session = relationship(
         "ChatSession",
         back_populates="messages",
+    )
+
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+
+    id = Column(String, primary_key=True)
+
+    user_id = Column(
+        String,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True,
+    )
+
+    token_hash = Column(
+        String,
+        nullable=False,
+        unique=True,
+        index=True,
+    )
+
+    expires_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+    )
+
+    revoked = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=datetime.now(timezone.utc),
     )

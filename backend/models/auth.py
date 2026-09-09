@@ -7,3 +7,7 @@ class LoginRequest(BaseModel):
 class AuthResponse(BaseModel):
     access_token: str
     token_type: str
+    refresh_token: str
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

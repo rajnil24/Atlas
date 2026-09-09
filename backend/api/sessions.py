@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException , Depends
 from pydantic import BaseModel
 from backend.stores.session_store import SessionStore
-from backend.stores.user_store import UserStore
+from backend.dependencies.auth import get_current_user
 
 
 router = APIRouter(
@@ -10,11 +10,10 @@ router = APIRouter(
 )
 
 session_store = SessionStore()
-user_store = UserStore()
 
 
 class CreateSessionRequest(BaseModel):
-    user_id: str
+    pass
 
 class SessionResponse(BaseModel):
     id: str
@@ -29,63 +28,54 @@ class UpdateSessionRequest(BaseModel):
     response_model=SessionResponse,
 )
 
-def create_session(request: CreateSessionRequest):
-
-    user = user_store.get_user_by_id(
-        request.user_id
-    )
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
+def create_session(current_user=Depends(get_current_user),):
 
     session = session_store.create_session(
-        user_id=user.id,
+    user_id=current_user.id,
     )
 
+    if not session:
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to create session",
+        )
+
     return SessionResponse(
-        id=session.id,
-        user_id=session.user_id,
+        id=str(session.id),
+        user_id=str(session.user_id),
         title=session.title,
     )
 
 @router.get(
-    "/{user_id}",
+    "",
     response_model=list[SessionResponse],
 )
 
-def get_user_sessions(user_id: str):
+def get_user_sessions(current_user=Depends(get_current_user),):
 
-    user = user_store.get_user_by_id(user_id)
-
-    if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found",
-        )
+    user_id = str(current_user.id)
 
     sessions = session_store.get_user_sessions(user_id)
 
     return [
         SessionResponse(
-            id=session.id,
-            user_id=session.user_id,
+            id=str(session.id),
+            user_id=str(session.user_id),
             title=session.title,
         )
         for session in sessions
     ]
 
 @router.patch(
-    "/{user_id}/sessions/{session_id}",
+    "/{session_id}",
     response_model=SessionResponse,
 )
 def update_session(
-    user_id: str,
     session_id: str,
     request: UpdateSessionRequest,
+    current_user=Depends(get_current_user),
 ):
+    user_id = str(current_user.id)
 
     session = session_store.update_session_title(
         user_id=user_id,
@@ -100,19 +90,21 @@ def update_session(
         )
 
     return SessionResponse(
-        id=session.id,
-        user_id=session.user_id,
+        id=str(session.id),
+        user_id=str(session.user_id),
         title=session.title,
     )
 
 @router.delete(
-    "/{user_id}/sessions/{session_id}",
+    "/{session_id}",
 )
 def delete_session(
-    user_id: str,
     session_id: str,
-):
-
+    current_user=Depends(get_current_user),
+): 
+    
+    user_id = str(current_user.id)
+    
     deleted = session_store.delete_session(
         user_id=user_id,
         session_id=session_id,

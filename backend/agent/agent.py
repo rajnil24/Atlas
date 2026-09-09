@@ -38,15 +38,19 @@ class Agent:
         print(plan)
         llm = LLMClient()
 
+        plan_required = True
         if len(plan.steps) == 0:
-            reply = await llm.generate(query)
-            return reply
-
-        parallel_executor = ParallelExecutor(registry = self.registry , max_concurrency = 20 , step_timeout = 20.0) 
-        context = await parallel_executor.execute_plan(plan)
+            #reply = await llm.generate(query)
+            plan_required = False
+            #return reply
         
-        id = plan.steps[-1].step_id
-        final_result = context.get_result(id)
+        final_result = ""
+        if plan_required :
+            parallel_executor = ParallelExecutor(registry = self.registry , max_concurrency = 20 , step_timeout = 20.0) 
+            context = await parallel_executor.execute_plan(plan)
+            id = plan.steps[-1].step_id
+            final_result = context.get_result(id)
+            
         print("final_result is ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" , final_result)
 
         async def nl_ans( plan_response) :

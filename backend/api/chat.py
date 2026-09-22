@@ -1,3 +1,4 @@
+import time 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from backend.dependencies.auth import get_current_user
@@ -7,7 +8,10 @@ from backend.memory.context_builder import ContextBuilder
 from backend.agent.agent import Agent 
 from backend.stores.session_store import SessionStore
 from backend.core.dependencies import PLANNER , REGISTRY
+import asyncio
 
+
+agent_semaphore = asyncio.Semaphore(5)
 router = APIRouter(tags=["Chat"])
 session_store = SessionStore()
 
@@ -26,6 +30,8 @@ async def chat(
     request: ChatRequest,
     current_user=Depends(get_current_user),
 ):
+    
+    start_time = time.perf_counter()
 
     user_id = str(current_user.id)
 
@@ -59,7 +65,12 @@ async def chat(
         registry=REGISTRY,
     )
 
+    #async with agent_semaphore:
     final_ans = await agent.run(request.message)
+
+    total_time = time.perf_counter() - start_time
+
+    print(f"⏱️ Total request time: {total_time:.2f} seconds")
 
     return ChatResponse(
         session_id=request.session_id,

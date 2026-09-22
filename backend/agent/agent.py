@@ -7,6 +7,7 @@ from backend.scheduler.parallel_executor import ParallelExecutor
 from backend.memory.episode_store import EpisodicStore
 from backend.memory.extractor import Extractor
 import asyncio 
+import time 
 
 class Agent:
 
@@ -32,10 +33,14 @@ class Agent:
         self,
         query: str
     ):  
+        t = time.perf_counter()
         build_context = await self.context_builder.build(user_id = self.user_id , session_id = self.session_id , query = query)
+        print(f"$$$$$$$$$$[TIMING]$$$$$$$$$$$$$$$$$$ ContextBuilder: {time.perf_counter() - t:.2f}s")
+        t = time.perf_counter()
         plan : Plan = await self.planner.create_plan(query , build_context)
-        print("build_context is ->" ,build_context)
+        print(f"$$$$$$$$$$[TIMING]$$$$$$$$$$$$$$$$$$ Planning: {time.perf_counter() - t:.2f}s")
         print(plan)
+        
         llm = LLMClient()
 
         plan_required = True
@@ -46,32 +51,34 @@ class Agent:
         
         final_result = ""
         if plan_required :
+            
             parallel_executor = ParallelExecutor(registry = self.registry , max_concurrency = 20 , step_timeout = 20.0) 
+
+            t = time.perf_counter()
             context = await parallel_executor.execute_plan(plan)
+            print(f"$$$$$$$$$$[TIMING]$$$$$$$$$$$$$$$$$$ PLAN EXECUTION: {time.perf_counter() - t:.2f}s")
             id = plan.steps[-1].step_id
             final_result = context.get_result(id)
             
-        print("final_result is ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" , final_result)
+        #print("final_result is ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" , final_result)
+        t = time.perf_counter()
 
         async def nl_ans( plan_response) :
             prompt = HUMAN_ANS_PROMPT.format(plan = plan_response ,message = query 
                                              ,final_result=final_result)
-            print("#################################")
-            print("human nlp prompt is -> , " ,prompt)
+            
             reply = await llm.generate(prompt)
-            print("reply is ->" , reply)
-            print("#################################")
+            
             return reply
         
         plan_response = plan.plan_response
-        #print(plan_response)
+       
         reply = await nl_ans( plan_response)
-        """
-        print("------------------------------------")
-        print(reply)
-        print("------------------------------------")
-        print("context results are ->" , context.results)
-        """
+
+        print(f"$$$$$$$$$$[TIMING]$$$$$$$$$$$$$$$$$$ Final_ans_by_llm: {time.perf_counter() - t:.2f}s")
+
+        
+
         episodes = []
 
         episodes.append({
@@ -113,18 +120,44 @@ class Agent:
             "content" : reply ,
         })
 
+        t = time.perf_counter()
+
+        print(
+        f"[EPISODE] Before to_thread: "
+        f"{time.perf_counter():.4f}"
+)
+        
         await asyncio.to_thread(
             self.episodic_store.write_episodes_batch,
             episodes,
         )
-
-        print("episodes are ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" , episodes)
-        self.working_memory.add_turn(role = "user" , content = query)
-        self.working_memory.add_turn(role = "assistant" , content = reply)
-        print("line 124 agent.py")
         
+        print(
+
+    f"[EPISODE] After to_thread: "
+
+    f"{time.perf_counter():.4f}"
+
+)
+
+        print(
+    f"[EPISODE] Total await time: "
+    f"{time.perf_counter() - t:.2f}s"
+)
+
+        t = time.perf_counter()
+    
+        self.working_memory.add_turn(role = "user" , content = query)
+
+        self.working_memory.add_turn(role = "assistant" , content = reply)
+
+        print(f"[TIMING] Working_Memory DB write: {time.perf_counter() - t:.2f}s")
+        
+        t = time.perf_counter()
+
         await self.extractor.run(user_id = self.user_id , session_id = self.session_id , episode_limit = 20)
-        print("line 127 agent.py")
+
+        print(f"[TIMING] Extractor DB write: {time.perf_counter() - t:.2f}s")
 
         
         return reply

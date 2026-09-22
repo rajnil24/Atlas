@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
-
+import time
 from sqlalchemy.exc import SQLAlchemyError
 from backend.db.connection import SessionLocal
 from backend.db.models import Episode
@@ -41,8 +41,11 @@ class EpisodicStore:
             db.close()
 
     def write_episodes_batch(self, episodes: list[dict]) -> int:
+        start = time.perf_counter()
         db = SessionLocal()
+        print(f"$$$$$$$$$$$$$$$$$$$$$[DB] Session creation: {time.perf_counter() - start:.3f}s")
         try:
+            t = time.perf_counter()
             objects = [
                 Episode(
                     id=str(uuid.uuid4()),
@@ -55,9 +58,14 @@ class EpisodicStore:
                 )
                 for e in episodes
             ]
+            print(f"$$$$$$$$$$$$$$$$$$$$$[DB] Object creation: {time.perf_counter() - t:.3f}s")
+            t = time.perf_counter()
             db.bulk_save_objects(objects)
+            print(f"$$$$$$$$$$$$$$$$$$$[DB] bulk_save_objects: {time.perf_counter() - t:.3f}s")
+            t = time.perf_counter()
             db.commit()
-            print("bulk objects dispatched")
+            print(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$[DB] commit: {time.perf_counter() - t:.3f}s")
+            #print("bulk objects dispatched")
             return len(objects)
         except SQLAlchemyError as e:
             db.rollback()

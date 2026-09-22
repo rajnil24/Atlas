@@ -77,6 +77,7 @@ class ParallelExecutor:
             try:
 
                 tool = self.registry.get_tool(step.tool_name)
+                
                 validated_input = tool.input_schema(**resolved_input)
 
                 result = await asyncio.wait_for(
@@ -95,6 +96,8 @@ class ParallelExecutor:
             feedback_manager = FeedbackManager()
 
             tool = self.registry.get_tool(step.tool_name)
+
+            validated_input = tool.input_schema(**resolved_input)
 
             feedback = await feedback_manager.evaluate(
                 step=step,

@@ -9,8 +9,8 @@ from backend.tools.filetool import FileTool
 from backend.tools.llm_tool import LLMTool
 from backend.tools.calendar import CalendarTool
 from backend.tools.gmail import GmailTool
-from backend.services.code_writer import CodeWriterTool
-
+from backend.tools.code_writer import CodeWriterTool 
+from backend.tools.code_execution_tool import CodeExecutionTool
 
 LLM = LLMClient()
 
@@ -24,5 +24,6 @@ REGISTRY.register(LLMTool())
 REGISTRY.register(CalendarTool())
 REGISTRY.register(GmailTool())
 REGISTRY.register(CodeWriterTool())
+REGISTRY.register(CodeExecutionTool)
 
 PLANNER = Planner(LLM , REGISTRY)

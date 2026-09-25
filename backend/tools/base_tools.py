@@ -32,6 +32,8 @@ class BaseTool(ABC):
         input_data: BaseModel,
         result: ToolResult,
     ) -> Feedback | None:
+
+        print("!!!!!!!!!!!!!! base_tools.py 36")
         """
         Optional deterministic task validator.
         Returns:

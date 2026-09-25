@@ -1,6 +1,5 @@
 import subprocess 
 import json
-
 from pathlib import Path
 
 class DockerClient :
@@ -39,6 +38,7 @@ class DockerClient :
             "start",
             container_id,
             ]
+
             subprocess.run(
             command,
             capture_output=True,
@@ -53,13 +53,14 @@ class DockerClient :
         "wait",
         container_id,
         ]
+
         result = subprocess.run(
         command,
         capture_output=True,
         text=True,
-        timeout=timeout,
-       
+        timeout=timeout,  
         )
+
         return int(result.stdout.strip())
 
     def logs_container(self, container_id: str) -> tuple[str, str]:
@@ -69,12 +70,14 @@ class DockerClient :
         "logs",
         container_id,
         ]
+
         result = subprocess.run(
         command,
         capture_output=True,
         text=True,
         check=True,
         )
+
         return result.stdout, result.stderr
 
     def stop_container(self, container_id: str) -> None:
@@ -84,11 +87,21 @@ class DockerClient :
         "stop",
         container_id,
         ]
+
         subprocess.run(
         command,
         capture_output=True,
         text=True,
         check = False ,
+        )
+
+    def kill_container(self, container_id: str) -> None:
+
+        subprocess.run(
+            ["docker", "kill", container_id],
+            capture_output=True,
+            text=True,
+            check=False,
         )
 
     def inspect_container(self, container_id: str) -> dict:
@@ -98,12 +111,14 @@ class DockerClient :
         "inspect",
         container_id,
         ]
+
         result = subprocess.run(
         command,
         capture_output=True,
         text=True,
         check=True,
         )
+
         return json.loads(result.stdout)[0]
 
     def remove_container(self, container_id: str) -> None:
@@ -114,8 +129,10 @@ class DockerClient :
         "-f",
         container_id,
         ]
+
         subprocess.run(
         command,
         capture_output=True,
         text=True,
+        check = False,
         )

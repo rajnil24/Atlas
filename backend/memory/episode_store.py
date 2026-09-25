@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 import time
+import threading
 from sqlalchemy.exc import SQLAlchemyError
 from backend.db.connection import SessionLocal
 from backend.db.models import Episode
@@ -40,12 +41,22 @@ class EpisodicStore:
         finally:
             db.close()
 
-    def write_episodes_batch(self, episodes: list[dict]) -> int:
-        start = time.perf_counter()
+    def write_episodes_batch(self, episodes: list[dict] , session_id ) -> int:
+        print(
+
+         f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$[EPISODE][{session_id}] START "
+
+        f"DB FUNCTION START "
+
+    f"time={time.perf_counter():.4f} "
+
+    f"thread={threading.current_thread().name}"
+
+    )
         db = SessionLocal()
-        print(f"$$$$$$$$$$$$$$$$$$$$$[DB] Session creation: {time.perf_counter() - start:.3f}s")
+        
         try:
-            t = time.perf_counter()
+            
             objects = [
                 Episode(
                     id=str(uuid.uuid4()),
@@ -58,14 +69,20 @@ class EpisodicStore:
                 )
                 for e in episodes
             ]
-            print(f"$$$$$$$$$$$$$$$$$$$$$[DB] Object creation: {time.perf_counter() - t:.3f}s")
-            t = time.perf_counter()
+            
             db.bulk_save_objects(objects)
-            print(f"$$$$$$$$$$$$$$$$$$$[DB] bulk_save_objects: {time.perf_counter() - t:.3f}s")
-            t = time.perf_counter()
+            
             db.commit()
-            print(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$[DB] commit: {time.perf_counter() - t:.3f}s")
-            #print("bulk objects dispatched")
+            print(
+
+    f"$$$$$$$$$$$$$$$$$$$$$$$$$$$[EPISODE][{session_id}] "
+
+    f"DB FUNCTION END"
+    f"time={time.perf_counter():.4f} "
+
+    f"thread={threading.current_thread().name}"
+
+)
             return len(objects)
         except SQLAlchemyError as e:
             db.rollback()

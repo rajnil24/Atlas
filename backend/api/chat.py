@@ -70,7 +70,7 @@ async def chat(
 
     total_time = time.perf_counter() - start_time
 
-    print(f"⏱️ Total request time: {total_time:.2f} seconds")
+    print(f" Total request time: {total_time:.2f} seconds")
 
     return ChatResponse(
         session_id=request.session_id,

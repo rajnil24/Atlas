@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class CodeWriterInput(BaseModel) :
     task : str 
     language : str 
+    existing_code: str | None = None
 
 class CodeWriterOutput(BaseModel) :
     code : str 
@@ -49,18 +50,25 @@ Returns ONLY raw source code without markdown, explanations, or additional text.
         return code.strip()
 
     async def run(self , input_data : CodeWriterInput) ->ToolResult :
+
         code_builder_prompt =  CODE_WRITER_PROMPT.format(
             task = input_data.task ,
-            language = input_data.language
+            language = input_data.language , 
+            existing_code=input_data.existing_code or "NONE",
         )
-        #print("inside code_wrt")
-        #print(type(code_builder_prompt))
-        #print(code_builder_prompt)
+
         generated_code = await self.llm.generate(code_builder_prompt)
-        #print(generated_code)  
+        
         code = self.clean_code(generated_code)
-        #print(code)
-        #print(repr(code))
+
+        print("code_writer.py 64 ")
+        
+        print("code end")
+        print("=============================================================================")
+        print(code)
+        print("code end")
+        print("=============================================================================")
+
         return ToolResult(
             success = True ,
             output = code ,

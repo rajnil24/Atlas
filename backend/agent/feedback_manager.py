@@ -14,9 +14,13 @@ class FeedbackManager:
     result: ToolResult,
 ) -> Feedback:
 
-    # ------------------------------------------------
-    # 1. Deterministic validation
-    # ------------------------------------------------
+        print("feedback_manager.py 17")
+        print(step)
+
+        print("#################### parallel_executor.py 102")
+        print("validated_input is VV")
+        print(validated_input)
+        print("#################### END")
 
         validation = await tool.validate(
             validated_input,

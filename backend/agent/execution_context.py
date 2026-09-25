@@ -55,6 +55,8 @@ class ExecutionContext:
                 current = self.results[step_id]
 
                 for key in parts[2:]:
+                    print("execution_context.py 58")
+                    print(key)
                     if not isinstance(current, dict):
                         raise ValueError(
                             f"{key} cannot be accessed ,execution_context.py line60"

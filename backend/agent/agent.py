@@ -123,25 +123,26 @@ class Agent:
         t = time.perf_counter()
 
         print(
-        f"[EPISODE] Before to_thread: "
+        f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$[EPISODE] [{self.session_id}] Before to_thread: "
         f"{time.perf_counter():.4f}"
 )
         
         await asyncio.to_thread(
             self.episodic_store.write_episodes_batch,
             episodes,
+            self.session_id,
         )
         
         print(
 
-    f"[EPISODE] After to_thread: "
+    f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$[EPISODE][{self.session_id}]  After to_thread: "
 
     f"{time.perf_counter():.4f}"
 
 )
 
         print(
-    f"[EPISODE] Total await time: "
+    f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$[EPISODE] Total await time: "
     f"{time.perf_counter() - t:.2f}s"
 )
 

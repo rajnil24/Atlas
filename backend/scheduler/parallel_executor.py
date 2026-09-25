@@ -147,9 +147,10 @@ class ParallelExecutor:
                 step.status = StepStatus.FAILED
                 step.error = feedback.reason
                 scheduler.mark_failed(step.step_id)
-            print("inside parallel_executor.py line 147*************************************************************************************************")
-            print(step)
-            print(step.attempt_history)
+            print("inside parallel_executor.py line 150*************************************************************************************************")
+            #print(step)
+            #print(step.attempt_history)
+            print("exited from parallel_executor.py line 153")
             
     async def _handle_revision(
         self,

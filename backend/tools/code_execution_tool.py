@@ -33,6 +33,8 @@ class CodeExecutionTool(BaseTool):
         input_data: CodeExecutionInput,
     ) -> ToolResult:
 
+        print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 36")
+
         if input_data.language.lower() != "python":
 
             return ToolResult(
@@ -46,23 +48,32 @@ class CodeExecutionTool(BaseTool):
 
         workspace = TempWorkspace()
 
-
+        print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 51")
+        print(type(workspace))
+        print(workspace)
 
         try:
 
-            
+            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 57")
             workspace_path = workspace.create()
-
-            print("code_execution_tool 56")
+            print(type(workspace_path))
+            print(workspace_path)
+            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 60")
+            print(type(workspace_path))
+            print(workspace_path)
 
             workspace.write_code(
                 input_data.code
             )
 
+            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 64")
+
             result = await asyncio.to_thread(
                 self.executor.execute,
                 workspace_path,
             )
+
+            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 71")
 
             success = (
                 result.status
@@ -92,6 +103,8 @@ class CodeExecutionTool(BaseTool):
             )
 
         except Exception as exc:
+
+            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 104")
 
             return ToolResult(
                 success=False,

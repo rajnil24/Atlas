@@ -20,6 +20,10 @@ class FeedbackManager:
         print("#################### parallel_executor.py 102")
         print("validated_input is VV")
         print(validated_input)
+        print("TOOL:", tool)
+        print("TOOL TYPE:", type(tool))
+        print("TOOL IS CLASS:", isinstance(tool, type))
+        print("TOOL VALIDATE:", tool.validate)
         print("#################### END")
 
         validation = await tool.validate(

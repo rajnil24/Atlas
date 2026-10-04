@@ -34,12 +34,22 @@ class DockerExecutor:
 
         container_id :  str | None = None
 
+        print("#####################docker_executor.py 37")
+        print(type(workspace))
+        print(workspace)
+
         try:
 
             container_id = self.client.create_container(workspace)
 
+            print("#################docker_executor.py 45 ")
+
             self.client.start_container(container_id)
 
+            print("#################docker_executor.py 49 ")
+
+            print(type(container_id))
+            print((container_id))
             exit_code = self.client.wait_container(container_id , timeout=self.timeout,)
 
             execution_time = time.perf_counter() - start_time
@@ -55,6 +65,8 @@ class DockerExecutor:
                timed_out=False,
                oom_killed=oom_killed,
                )
+
+            print("#################docker_executor.py 69 ")
             
             return ExecutionResult(
             stdout=stdout,
@@ -82,7 +94,10 @@ class DockerExecutor:
 
                 self.client.kill_container(container_id)
 
+                print("#################docker_executor.py 97 ")
+
                 try :
+                    print("#################docker_executor.py 100 ")
                     stdout, stderr = (self.client.logs_container
                    (
                     container_id
@@ -90,9 +105,10 @@ class DockerExecutor:
                     )
 
                 except Exception:
+                    print("#################docker_executor.py 108 ")
 
                     pass
-
+            print("#################docker_executor.py 111 ")
             return ExecutionResult(
                 stdout=stdout,
                 stderr=(
@@ -111,7 +127,7 @@ class DockerExecutor:
             execution_time = (
                 time.perf_counter() - start_time
             )
-
+            print("#################docker_executor.py 130 ")
             return ExecutionResult(
                 stdout="",
                 stderr=str(exc),
@@ -122,9 +138,9 @@ class DockerExecutor:
                 execution_time=execution_time,
             )
         
-        finally:
-            if container_id:
-               self.client.remove_container(container_id)
+        #finally:
+            #if container_id:
+               #self.client.remove_container(container_id)
 
 
         

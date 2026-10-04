@@ -28,6 +28,8 @@ services:
     container_name: atlas
     ports:
       - "8000:8000"
+    group_add:
+      - "0"
     env_file:
       - backend/.env
     volumes:

@@ -24,6 +24,6 @@ REGISTRY.register(LLMTool())
 REGISTRY.register(CalendarTool())
 REGISTRY.register(GmailTool())
 REGISTRY.register(CodeWriterTool())
-REGISTRY.register(CodeExecutionTool)
+REGISTRY.register(CodeExecutionTool())
 
 PLANNER = Planner(LLM , REGISTRY)

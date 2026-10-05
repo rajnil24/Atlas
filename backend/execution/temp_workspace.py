@@ -2,13 +2,24 @@ from pathlib import Path
 import tempfile
 import shutil
 import os
+from dataclasses import dataclass
 import getpass
 import socket
 
+@dataclass
+class Workspace:
+
+    container_path: Path
+    host_path: Path
+
 class TempWorkspace:
-    def __init__(self , base_path: str = "/atlas/workspaces"):
-        self.base_path = Path(base_path)
-        self.workspace_path: Path | None = None
+    def __init__(self ,
+                 container_base: str = "/atlas/workspaces" ,
+                 host_base: str = "/Users/rajnil/Documents/i/atlas/sandbox_workspaces",):
+        
+        self.container_base = Path(container_base)
+        self.host_base = Path(host_base)
+        self.workspace: Workspace | None = None
 
     def create(self):
         """
@@ -20,31 +31,36 @@ class TempWorkspace:
         print("user:", getpass.getuser())
         print("uid:", os.getuid())
         print("hostname:", socket.gethostname())
-        print("base_path:", self.base_path)
-        print("base exists:", self.base_path.exists())
-        print("base parent exists:", self.base_path.parent.exists())
-        print("base writable:", os.access(self.base_path, os.W_OK))
-        print("parent writable:", os.access(self.base_path.parent, os.W_OK))
         print("=====================================")
-        self.base_path.mkdir(parents=True, exist_ok=True)
+        self.container_base.mkdir(parents=True, exist_ok=True)
         print("################## temp_workspace 30")
-        self.workspace_path = Path(
+
+        container_path = Path(
             tempfile.mkdtemp(
                 prefix="atlas_",
-                dir=self.base_path
+                dir=self.container_base,
             )
         )
-        print("################## temp_workspace 37")
-        return self.workspace_path
+
+        relative_path = container_path.relative_to(self.container_base)
+
+        host_path = self.host_base / relative_path
+
+        self.workspace = Workspace(
+            container_path=container_path,
+            host_path=host_path,
+        )
+
+        return self.workspace
 
     def write_code(self, code: str):
         """
         Writes generated python code into the workspace.
         """
-        if self.workspace_path is None:
+        if self.workspace is None:
             raise RuntimeError("Workspace has not been created.")
 
-        code_file = self.workspace_path / "generated_code.py"
+        code_file = self.workspace.container_path / "generated_code.py"
 
         code_file.write_text(
             code,
@@ -53,11 +69,12 @@ class TempWorkspace:
 
         return code_file
 
-    def cleanup(self):
+    def cleanup(self)-> None:
         """
         Deletes the temporary workspace.
         """
-        if self.workspace_path and self.workspace_path.exists():
-            shutil.rmtree(self.workspace_path)
+        if self.workspace is not None:
+            if self.workspace.container_path.exists():
+                shutil.rmtree(self.workspace.container_path)
 
-        self.workspace_path = None
+        self.workspace = None

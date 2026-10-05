@@ -46,34 +46,36 @@ class CodeExecutionTool(BaseTool):
                 ),
             )
 
-        workspace = TempWorkspace()
+        workspace_manager = TempWorkspace()
 
         print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 51")
-        print(type(workspace))
-        print(workspace)
+        print(type(workspace_manager))
+        print(workspace_manager)
 
         try:
-
+            
             print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 57")
-            workspace_path = workspace.create()
-            print(type(workspace_path))
-            print(workspace_path)
-            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 60")
-            print(type(workspace_path))
-            print(workspace_path)
+            workspace = (
+                workspace_manager.create()
+            )
+            
+            print("Workspace:", workspace)
+            print("Container exists:", workspace.container_path.exists())
+            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 64")
+            
 
-            workspace.write_code(
+            workspace_manager.write_code(
                 input_data.code
             )
 
-            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 64")
+            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 71")
 
             result = await asyncio.to_thread(
                 self.executor.execute,
-                workspace_path,
+                workspace,
             )
 
-            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 71")
+            print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 78")
 
             success = (
                 result.status
@@ -113,5 +115,4 @@ class CodeExecutionTool(BaseTool):
             )
 
         finally:
-
-            workspace.cleanup()
+            workspace_manager.cleanup()

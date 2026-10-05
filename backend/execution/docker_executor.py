@@ -1,6 +1,7 @@
 from backend.execution.docker_client import DockerClient
 from backend.execution.execution_results import ExecutionResult
 from backend.execution.execution_status import ExecutionStatus
+from backend.execution.temp_workspace import Workspace
 from pathlib import Path
 import time
 import subprocess
@@ -28,11 +29,11 @@ class DockerExecutor:
         
         return ExecutionStatus.RUNTIME_ERROR
     
-    def execute(self, workspace: Path) -> ExecutionResult:
+    def execute(self, workspace: Workspace) -> ExecutionResult:
 
         start_time = time.perf_counter()
 
-        container_id :  str | None = None
+        container_id: str | None = None
 
         print("#####################docker_executor.py 37")
         print(type(workspace))
@@ -40,10 +41,14 @@ class DockerExecutor:
 
         try:
 
-            container_id = self.client.create_container(workspace)
+            container_id = (
+                self.client.create_container(
+                    workspace
+                )
+            )
 
-            print("#################docker_executor.py 45 ")
-
+            print("#################docker_executor.py 50 ")
+            
             self.client.start_container(container_id)
 
             print("#################docker_executor.py 49 ")
@@ -77,6 +82,7 @@ class DockerExecutor:
             execution_time=execution_time,
             status = status 
             )
+
         
         except subprocess.TimeoutExpired:
 
@@ -138,9 +144,9 @@ class DockerExecutor:
                 execution_time=execution_time,
             )
         
-        #finally:
-            #if container_id:
-               #self.client.remove_container(container_id)
+        finally:
+            if container_id:
+               self.client.remove_container(container_id)
 
 
         

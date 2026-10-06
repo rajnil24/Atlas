@@ -60,7 +60,7 @@ class CodeExecutionTool(BaseTool):
             )
             
             print("Workspace:", workspace)
-            print("Container exists:", workspace.container_path.exists())
+            #print("Container exists:", workspace.container_path.exists())
             print("~~~~~~~~~~~~~~~~~~~~~~ code_execution_tool.py 64")
             
 

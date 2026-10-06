@@ -14,11 +14,11 @@ class Workspace:
 
 class TempWorkspace:
     def __init__(self ,
-                 container_base: str = "/atlas/workspaces" ,
-                 host_base: str = "/Users/rajnil/Documents/i/atlas/sandbox_workspaces",):
+                 container_base: str | None = None ,
+                 host_base: str | None = None,):
         
-        self.container_base = Path(container_base)
-        self.host_base = Path(host_base)
+        self.container_base = Path(container_base or os.getenv("WORKSPACE_CONTAINER_ROOT"))
+        self.host_base = Path(host_base or os.getenv("WORKSPACE_HOST_ROOT"))
         self.workspace: Workspace | None = None
 
     def create(self):

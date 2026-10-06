@@ -4,16 +4,7 @@ import asyncio
 tool = CodeExecutionTool()
 
 code = """
-from pathlib import Path
-
-try:
-    Path("/tmp/hello.txt").write_text("hello")
-    print("TMP WRITE SUCCEEDED")
-    print(Path("/tmp/hello.txt").read_text())
-except Exception as e:
-    print("TMP WRITE FAILED")
-    print(type(e).__name__)
-    print(str(e))
+print("badiya")
 """
 input = CodeExecutionInput(code = code , )
 result = asyncio.run(tool.run(input))
